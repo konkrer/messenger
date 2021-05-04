@@ -6,7 +6,9 @@ import { useStyles } from '../themes/signupLogin';
 import Bubble from '../assets/bubble.svg';
 
 /**
- * pageText()
+ * Return dictionary object with appropriate text for either the login or signup page.
+ * If omitted returns text for login page.
+ *
  * @param {string} page signup | login
  * @returns object with appropriate page text
  */
@@ -29,7 +31,7 @@ const pageText = page => {
 /**
  * SignupLoginGrid View Component.
  *
- * This component holds the layout grid with syling for both the signup and login views.
+ * This component holds the layout grid with styling for both the signup and login views.
  */
 
 const SignupLoginGrid = ({
