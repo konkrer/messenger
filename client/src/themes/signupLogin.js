@@ -49,7 +49,7 @@ export const useStyles = makeStyles(theme => ({
       marginTop: '10px',
     },
     [theme.breakpoints.up('md')]: {
-      paddingBottom: '135px',
+      paddingBottom: '150px',
       marginTop: '50px',
     },
   },
