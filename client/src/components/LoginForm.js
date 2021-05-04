@@ -6,6 +6,8 @@ import {
   Typography,
 } from '@material-ui/core';
 
+/** LoginForm component */
+
 const LoginForm = ({ submitHandler, classes }) => (
   <Box className={classes.formWrapper}>
     <Typography variant="h4" component="h2">
@@ -19,7 +21,7 @@ const LoginForm = ({ submitHandler, classes }) => (
           label="Username"
           name="username"
           type="text"
-          autocomplete="username"
+          autoComplete="username"
           fullWidth
           required
           InputProps={{
@@ -42,7 +44,7 @@ const LoginForm = ({ submitHandler, classes }) => (
           type="password"
           inputProps={{ minLength: 6 }}
           name="password"
-          autocomplete="password"
+          autoComplete="password"
           fullWidth
           required
           InputProps={{

@@ -7,6 +7,8 @@ import { login } from './store/utils/thunkCreators';
 import LoginForm from './components/LoginForm';
 import SignupLoginGrid from './components/SignupLoginGrid';
 
+/** Login View Component */
+
 const Login = ({ user, login }) => {
   const handleLogin = async event => {
     event.preventDefault();
@@ -25,10 +27,7 @@ const Login = ({ user, login }) => {
       submitHandler={handleLogin}
       formErrorMessage={null}
       FormComponent={LoginForm}
-      xsScreenButtonText={'Login'}
-      pageSwitchText={"Don't have an account?"}
-      pageSwitchBtnText={'Create Account'}
-      pageSwitchUrl={'/register'}
+      page={'login'}
     />
   );
 };

@@ -7,9 +7,9 @@ import { register } from './store/utils/thunkCreators';
 import SignupForm from './components/SignupForm';
 import SignupLoginGrid from './components/SignupLoginGrid';
 
-/** Login View Component */
+/** Signup View Component */
 
-const Login = ({ user, register }) => {
+const Signup = ({ user, register }) => {
   const [formErrorMessage, setFormErrorMessage] = useState({});
 
   const handleRegister = async event => {
@@ -36,10 +36,7 @@ const Login = ({ user, register }) => {
       submitHandler={handleRegister}
       formErrorMessage={formErrorMessage}
       FormComponent={SignupForm}
-      xsScreenButtonText={'Signup'}
-      pageSwitchText={'Already have an account?'}
-      pageSwitchBtnText={'Login'}
-      pageSwitchUrl={'/login'}
+      page={'signup'}
     />
   );
 };
@@ -58,4 +55,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(Signup);

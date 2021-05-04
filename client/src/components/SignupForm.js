@@ -7,6 +7,8 @@ import {
   Typography,
 } from '@material-ui/core';
 
+/** SignupForm Component */
+
 const SignupForm = ({ submitHandler, classes, formErrorMessage }) => (
   <Box className={classes.formWrapper}>
     <Typography variant="h4" component="h2">
@@ -20,7 +22,7 @@ const SignupForm = ({ submitHandler, classes, formErrorMessage }) => (
           label="Username"
           name="username"
           type="text"
-          autocomplete="username"
+          autoComplete="username"
           fullWidth
           required
           InputProps={{
@@ -41,7 +43,7 @@ const SignupForm = ({ submitHandler, classes, formErrorMessage }) => (
           aria-label="e-mail address"
           type="email"
           name="email"
-          autocomplete="email"
+          autoComplete="email"
           fullWidth
           required
           InputProps={{
@@ -66,7 +68,7 @@ const SignupForm = ({ submitHandler, classes, formErrorMessage }) => (
           type="password"
           inputProps={{ minLength: 6 }}
           name="password"
-          autocomplete="password"
+          autoComplete="password"
           fullWidth
           required
           InputProps={{
@@ -92,7 +94,7 @@ const SignupForm = ({ submitHandler, classes, formErrorMessage }) => (
           type="password"
           inputProps={{ minLength: 6 }}
           name="confirmPassword"
-          autocomplete="password"
+          autoComplete="password"
           fullWidth
           required
           InputProps={{

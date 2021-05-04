@@ -1,21 +1,47 @@
 import { useHistory } from 'react-router-dom';
-import { Grid, Box, Typography, Button } from '@material-ui/core';
+import { Grid, Box, Typography, Button, Hidden } from '@material-ui/core';
 
 // local
 import { useStyles } from '../themes/signupLogin';
 import Bubble from '../assets/bubble.svg';
 
+/**
+ * pageText()
+ * @param {string} page signup | login
+ * @returns object with appropriate page text
+ */
+const pageText = page => {
+  if (/signup/i.test(page))
+    return {
+      xsScreenButtonText: 'Signup',
+      pageSwitchText: 'Already have an account?',
+      pageSwitchBtnText: 'Login',
+      pageSwitchUrl: '/login',
+    };
+  return {
+    xsScreenButtonText: 'Login',
+    pageSwitchText: "Don't have an account?",
+    pageSwitchBtnText: 'Create Account',
+    pageSwitchUrl: '/register',
+  };
+};
+
+/**
+ * SignupLoginGrid View Component.
+ *
+ * This component holds the layout grid with syling for both the signup and login views.
+ */
+
 const SignupLoginGrid = ({
   FormComponent,
   submitHandler,
   formErrorMessage,
-  xsScreenButtonText,
-  pageSwitchText,
-  pageSwitchBtnText,
-  pageSwitchUrl,
+  page,
 }) => {
   const classes = useStyles();
   const history = useHistory();
+
+  const text = pageText(page);
 
   return (
     <Grid container className={classes.mainGrid}>
@@ -25,8 +51,8 @@ const SignupLoginGrid = ({
         className={classes.imgPanel}
         justify="center"
         alignItems="center"
-        xs="12"
-        md="5"
+        xs={12}
+        md={5}
       >
         <Box
           display="flex"
@@ -46,18 +72,11 @@ const SignupLoginGrid = ({
           <Typography variant="h4" component="h1" className={classes.imgHeader}>
             Converse with anyone with any language.
           </Typography>
-          {/* MaterialUI Quirk/Bug: below box needs to be present for following box below to hide as desired. */}
-          <Box display={{ xs: 'none', md: 'block' }}></Box>
-          <Box
-            display={{
-              xs: 'block',
-              md: 'none',
-            }}
-          >
+          <Hidden mdUp>
             <a href={'#formPanel'} className={'link-noStyle'}>
-              <Button variant="contained">{xsScreenButtonText}</Button>
+              <Button variant="contained">{text.xsScreenButtonText}</Button>
             </a>
-          </Box>
+          </Hidden>
         </Box>
       </Grid>
       <Grid
@@ -68,27 +87,29 @@ const SignupLoginGrid = ({
         justify="flex-start"
         alignItems="center"
         direction="column"
-        xs="12"
-        md="7"
+        xs={12}
+        md={7}
       >
-        <Grid container item xs="12" justify="flex-end" alignItems="center">
+        <Grid container item xs={12} justify="flex-end" alignItems="center">
           <Box my={10} />
-          <Grid container item xs="8" justify="flex-end">
+          <Grid container item xs={8} justify="flex-end">
             <Box className={classes.pageChangeText}>
               <Typography color="secondary">
-                <Box fontSize={18}>{pageSwitchText}</Box>
+                <Box component="span" fontSize={18}>
+                  {text.pageSwitchText}
+                </Box>
               </Typography>
             </Box>
           </Grid>
-          <Grid container item xs="4">
+          <Grid container item xs={4}>
             <Button
               variant="contained"
               className={classes.xlButtonWhite}
-              onClick={() => history.push(pageSwitchUrl)}
+              onClick={() => history.push(text.pageSwitchUrl)}
             >
               <Typography color="primary">
-                <Box fontSize={18} fontWeight="fontWeightBold">
-                  {pageSwitchBtnText}
+                <Box component="span" fontSize={18} fontWeight="fontWeightBold">
+                  {text.pageSwitchBtnText}
                 </Box>
               </Typography>
             </Button>
