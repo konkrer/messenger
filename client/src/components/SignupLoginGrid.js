@@ -1,9 +1,9 @@
 import { useHistory } from 'react-router-dom';
-import { Grid, Box, Typography, Button, Hidden } from '@material-ui/core';
+import { Grid, Box, Typography, Button, Hidden, Link } from '@material-ui/core';
 
 // local
 import { useStyles } from '../themes/signupLogin';
-import Bubble from '../assets/bubble.svg';
+import Bubble from '../assets/text_bubble.svg';
 
 /**
  * Return dictionary object with appropriate text for either the login or signup page.
@@ -75,9 +75,15 @@ const SignupLoginGrid = ({
             Converse with anyone with any language.
           </Typography>
           <Hidden mdUp>
-            <a href={'#formPanel'} className={'link-noStyle'}>
-              <Button variant="contained">{text.xsScreenButtonText}</Button>
-            </a>
+            <Link
+              href={'#formPanel'}
+              className={classes.textDecorationNone}
+              underline="none"
+            >
+              <Button className={classes.xsScreenButton} variant="contained">
+                {text.xsScreenButtonText}
+              </Button>
+            </Link>
           </Hidden>
         </Box>
       </Grid>

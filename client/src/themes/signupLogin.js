@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 // local
-import bgImg from '../assets/bg-img.png';
+import bgImg from '../assets/bg_img_friends_on_steps.png';
 
 /** Page styles for Signup and Login pages */
 
@@ -52,6 +52,9 @@ export const useStyles = makeStyles(theme => ({
       paddingBottom: '150px',
       marginTop: '50px',
     },
+  },
+  xsScreenButton: {
+    background: 'white',
   },
   formPanel: {
     minHeight: '100vh',
