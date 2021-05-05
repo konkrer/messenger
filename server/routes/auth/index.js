@@ -8,12 +8,6 @@ const cookieOptions = {
   httpOnly: true,
 };
 
-/** Cookie options to have user agent delete HttpOnly cookie. */
-const cookieDeleteOptions = {
-  expires: new Date(Date.now() - 1000),
-  httpOnly: true,
-};
-
 router.post('/register', async (req, res, next) => {
   try {
     // expects {username, email, password} in req.body
@@ -65,10 +59,8 @@ router.post('/login', async (req, res, next) => {
     });
 
     if (!user) {
-      console.log({ error: `No user found for username: ${username}` });
       res.status(401).json({ error: 'Wrong username and/or password' });
     } else if (!user.correctPassword(password)) {
-      console.log({ error: 'Wrong username and/or password' });
       res.status(401).json({ error: 'Wrong username and/or password' });
     } else {
       const token = jwt.sign(
@@ -87,7 +79,7 @@ router.post('/login', async (req, res, next) => {
 });
 
 router.delete('/logout', (req, res, next) => {
-  res.cookie('x-access-token', '', cookieDeleteOptions);
+  res.clearCookie('x-access-token');
   res.sendStatus(204);
 });
 
