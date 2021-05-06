@@ -23,15 +23,15 @@ const useStyles = makeStyles(() => ({
 const ActiveChat = ({ user, conversation = {} }) => {
   const classes = useStyles();
   const messagesLengthRef = useRef(conversation.messages?.length || 0);
+  const messageInput = useRef(null);
 
   // scroll to bottom of active chat when length of messages changes.
   useEffect(() => {
-    const msgInput = document.getElementById('message-input');
     if (
-      msgInput &&
+      messageInput.current &&
       conversation.messages?.length !== messagesLengthRef.current
     ) {
-      msgInput.scrollIntoView();
+      messageInput.current.scrollIntoView();
       messagesLengthRef.current = conversation.messages.length;
     }
   }, [conversation.messages]);
@@ -54,7 +54,7 @@ const ActiveChat = ({ user, conversation = {} }) => {
               otherUser={conversation.otherUser}
               conversationId={conversation.id}
               user={user}
-              id={'message-input'}
+              reference={messageInput}
             />
           </Box>
         </>
