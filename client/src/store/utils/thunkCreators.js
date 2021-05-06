@@ -22,8 +22,8 @@ export const fetchUser = () => async dispatch => {
   try {
     const { data } = await axios.get('/auth/user');
     dispatch(gotUser(data));
-    if (data.id) {
-      socket.emit('add-online-user', data.id);
+    if (data.id && socket.id) {
+      socket.emit('add-online-user', data.id, socket.id);
     }
   } catch (error) {
     console.error(error);
@@ -37,7 +37,7 @@ export const register = credentials => async dispatch => {
     const { data } = await axios.post('/auth/register', credentials);
     await localStorage.setItem('messenger-token', data.token);
     dispatch(gotUser(data));
-    socket.emit('add-online-user', data.id);
+    socket.emit('add-online-user', data.id, socket.id);
   } catch (error) {
     console.error(error);
     dispatch(gotUser({ error: error.response.data.error || 'Server Error' }));
@@ -49,7 +49,7 @@ export const login = credentials => async dispatch => {
     const { data } = await axios.post('/auth/login', credentials);
     await localStorage.setItem('messenger-token', data.token);
     dispatch(gotUser(data));
-    socket.emit('add-online-user', data.id);
+    socket.emit('add-online-user', data.id, socket.id);
   } catch (error) {
     console.error(error);
     dispatch(gotUser({ error: error.response.data.error || 'Server Error' }));
@@ -58,6 +58,7 @@ export const login = credentials => async dispatch => {
 
 export const logout = id => async dispatch => {
   try {
+    // calling this doesn't do anything in the back-end currently
     await axios.delete('/auth/logout');
     await localStorage.removeItem('messenger-token');
     dispatch(gotUser({}));

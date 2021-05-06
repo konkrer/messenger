@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box } from '@material-ui/core';
 import { Input, Header, Messages } from './index';
@@ -22,11 +22,19 @@ const useStyles = makeStyles(() => ({
 
 const ActiveChat = ({ user, conversation = {} }) => {
   const classes = useStyles();
+  const messagesLengthRef = useRef(conversation.messages?.length || 0);
 
+  // scroll to bottom of active chat when length of messages changes.
   useEffect(() => {
     const msgInput = document.getElementById('message-input');
-    if (msgInput) msgInput.scrollIntoView();
-  });
+    if (
+      msgInput &&
+      conversation.messages?.length !== messagesLengthRef.current
+    ) {
+      msgInput.scrollIntoView();
+      messagesLengthRef.current = conversation.messages.length;
+    }
+  }, [conversation.messages]);
 
   return (
     <Box className={classes.root}>
