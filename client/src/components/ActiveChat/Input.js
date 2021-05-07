@@ -47,9 +47,13 @@ class Input extends Component {
   };
 
   render() {
-    const { classes, id } = this.props;
+    const { classes, reference } = this.props;
     return (
-      <form className={classes.root} onSubmit={this.handleSubmit} id={id}>
+      <form
+        className={classes.root}
+        onSubmit={this.handleSubmit}
+        ref={reference}
+      >
         <FormControl fullWidth hiddenLabel>
           <FilledInput
             classes={{ root: classes.input }}
