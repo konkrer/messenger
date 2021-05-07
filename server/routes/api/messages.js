@@ -43,20 +43,26 @@ router.post('/', async (req, res, next) => {
   }
 });
 
+// Set messageRead to true for messages that have been read by user.
+// Expects an array named "readMessages" containing the message ids.
 router.post('/read', (req, res, next) => {
   try {
     if (!req.user) {
       return res.sendStatus(401);
     }
-    if (!req.body.readMessages || !Array.isArray(req.body.readMessages)) {
+    if (
+      !req.body.readMessages ||
+      !req.body.conversationId ||
+      !Array.isArray(req.body.readMessages) ||
+      !Number.isInteger(+req.body.conversationId)
+    ) {
       return res.sendStatus(400);
     }
-    const readerId = req.user.id;
-    const { readMessages } = req.body;
+    const { readMessages, conversationId } = req.body;
 
-    Message.markRead(readMessages, readerId);
+    Message.markRead(readMessages, conversationId);
 
-    res.json({ stats: 'marked read' });
+    res.json({ status: 'marked read' });
   } catch (error) {
     next(error);
   }

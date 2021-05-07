@@ -22,15 +22,13 @@ const Message = db.define('message', {
   },
 });
 
-Message.markRead = async function (readMessages, readerId) {
-  //TODO: check readerId is present an all conversations that have
-  // mssgs being set to messageRead=true.
-
+Message.markRead = async function (readMessages, conversationId) {
   await Message.update(
     { messageRead: true },
     {
       where: {
         id: readMessages,
+        conversationId: conversationId,
       },
     }
   );

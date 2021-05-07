@@ -37,7 +37,7 @@ socket.on('connect', async () => {
   socket.on('sender-messages-read', ({ conversationId }) => {
     store.dispatch(setOwnMessagesRead(conversationId));
   });
-  // this user read meassages from another user-agent update.
+  // this user read meassages from another user-agent connection.
   // Removes unread messages notifications badge.
   socket.on('recipient-messages-read', ({ conversationId }) => {
     store.dispatch(setMessagesRead(conversationId));
