@@ -1,19 +1,17 @@
-import React, { useState } from "react";
-import { connect } from "react-redux";
-import { Sidebar } from "./index";
-import { searchUsers } from "../../store/utils/thunkCreators";
-import { clearSearchedUsers } from "../../store/conversations";
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
+import { Sidebar } from './index';
+import { searchUsers } from '../../store/utils/thunkCreators';
+import { clearSearchedUsers } from '../../store/conversations';
 
-const SidebarContainer = (props) => {
-  const { searchUsers, clearSearchedUsers } = props;
+const SidebarContainer = ({ searchUsers, clearSearchedUsers }) => {
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const handleChange = async (event) => {
-    if (event.target.value === "") {
+  const handleChange = async event => {
+    if (event.target.value === '') {
       // clear searched convos from redux store
       clearSearchedUsers();
-      setSearchTerm("");
+      setSearchTerm('');
       return;
     }
     if (searchTerm.includes(event.target.value)) {
@@ -28,14 +26,14 @@ const SidebarContainer = (props) => {
   return <Sidebar handleChange={handleChange} searchTerm={searchTerm} />;
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
-    searchUsers: (username) => {
+    searchUsers: username => {
       dispatch(searchUsers(username));
     },
     clearSearchedUsers: () => {
       dispatch(clearSearchedUsers());
-    }
+    },
   };
 };
 

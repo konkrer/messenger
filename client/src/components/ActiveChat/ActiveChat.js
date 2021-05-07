@@ -1,29 +1,32 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { Box } from "@material-ui/core";
-import { Input, Header, Messages } from "./index";
-import { connect } from "react-redux";
+import React, { useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
+import { Input, Header, Messages } from './index';
+import { connect } from 'react-redux';
 
 const useStyles = makeStyles(() => ({
   root: {
-    display: "flex",
+    display: 'flex',
     flexGrow: 8,
-    flexDirection: "column"
+    flexDirection: 'column',
   },
   chatContainer: {
     marginLeft: 41,
     marginRight: 41,
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     flexGrow: 1,
-    justifyContent: "space-between"
-  }
+    justifyContent: 'space-between',
+  },
 }));
 
-const ActiveChat = (props) => {
+const ActiveChat = ({ user, conversation = {} }) => {
   const classes = useStyles();
-  const { user } = props;
-  const conversation = props.conversation || {};
+
+  useEffect(() => {
+    const msgInput = document.getElementById('message-input');
+    if (msgInput) msgInput.scrollIntoView();
+  });
 
   return (
     <Box className={classes.root}>
@@ -43,6 +46,7 @@ const ActiveChat = (props) => {
               otherUser={conversation.otherUser}
               conversationId={conversation.id}
               user={user}
+              id={'message-input'}
             />
           </Box>
         </>
@@ -51,14 +55,15 @@ const ActiveChat = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     user: state.user,
     conversation:
       state.conversations &&
       state.conversations.find(
-        (conversation) => conversation.otherUser.username === state.activeConversation
-      )
+        conversation =>
+          conversation.otherUser.username === state.activeConversation
+      ),
   };
 };
 

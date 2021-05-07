@@ -1,16 +1,16 @@
-import React, { Component } from "react";
-import { withStyles } from "@material-ui/core/styles";
-import { Redirect } from "react-router-dom";
-import { connect } from "react-redux";
-import { Grid, CssBaseline, Button } from "@material-ui/core";
-import { SidebarContainer } from "./Sidebar";
-import { ActiveChat } from "./ActiveChat";
-import { logout, fetchConversations } from "../store/utils/thunkCreators";
-import { clearOnLogout } from "../store/index";
+import React, { Component } from 'react';
+import { withStyles } from '@material-ui/core/styles';
+import { Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { Grid, CssBaseline, Button } from '@material-ui/core';
+import { SidebarContainer } from './Sidebar';
+import { ActiveChat } from './ActiveChat';
+import { logout, fetchConversations } from '../store/utils/thunkCreators';
+import { clearOnLogout } from '../store/index';
 
 const styles = {
   root: {
-    height: "97vh",
+    height: '97vh',
   },
 };
 
@@ -61,16 +61,16 @@ class Home extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     user: state.user,
     conversations: state.conversations,
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
-    logout: (id) => {
+    logout: id => {
       dispatch(logout(id));
       dispatch(clearOnLogout());
     },
