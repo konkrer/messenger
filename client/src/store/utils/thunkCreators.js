@@ -133,7 +133,7 @@ const sendMessagesRead = (conversation, userId) => {
   });
 };
 
-// mark messages read in DB, Redux store, and emit socket event.
+// mark messages read in DB, Redux store, and emit "messages-read" socket event.
 export const messagesRead = (conversation, userId) => async dispatch => {
   try {
     await saveMessagesRead({ readMessages: conversation.unreadMessages });

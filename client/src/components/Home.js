@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -13,42 +13,22 @@ const styles = {
   },
 };
 
-class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isLoggedIn: false,
-    };
-  }
+const Home = ({ fetchConversations, classes, user }) => {
+  useEffect(() => {
+    fetchConversations();
+  }, [fetchConversations]);
 
-  componentDidUpdate(prevProps) {
-    if (this.props.user.id !== prevProps.user.id) {
-      this.setState({
-        isLoggedIn: true,
-      });
-    }
+  if (!user.id) {
+    return <Redirect to="/login" />;
   }
-
-  componentDidMount() {
-    this.props.fetchConversations();
-  }
-
-  render() {
-    const { classes } = this.props;
-    if (!this.props.user.id) {
-      // If we were previously logged in, redirect to login instead of register
-      if (this.state.isLoggedIn) return <Redirect to="/login" />;
-      return <Redirect to="/register" />;
-    }
-    return (
-      <Grid container component="main" className={classes.root}>
-        <CssBaseline />
-        <SidebarContainer />
-        <ActiveChat />
-      </Grid>
-    );
-  }
-}
+  return (
+    <Grid container component="main" className={classes.root}>
+      <CssBaseline />
+      <SidebarContainer />
+      <ActiveChat />
+    </Grid>
+  );
+};
 
 const mapStateToProps = state => {
   return {

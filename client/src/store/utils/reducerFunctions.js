@@ -1,3 +1,4 @@
+/**  When a new message is received or created add to store. */
 export const addMessageToStore = (state, payload) => {
   const { message, sender } = payload;
   // if sender isn't null, that means the message needs to be put in a brand new convo
@@ -24,6 +25,8 @@ export const addMessageToStore = (state, payload) => {
   });
 };
 
+/** When new messages is received add message ids to
+ * unread messages array for this conversation */
 export const addMessageToUnRead = (state, payload) => {
   const { message } = payload;
 
@@ -40,6 +43,8 @@ export const addMessageToUnRead = (state, payload) => {
   });
 };
 
+/** When this user sent a new messages on a different user-agent update
+ * this store with these new message in the approriate conversation. */
 export const addOwnMessageToStore = (state, payload) => {
   const { message, sender, user } = payload;
   // if sender isn't null, that means the message needs to be put in a brand new convo
@@ -66,6 +71,7 @@ export const addOwnMessageToStore = (state, payload) => {
   });
 };
 
+/** Note new online users as they come online in store. */
 export const addOnlineUserToStore = (state, id) => {
   return state.map(convo => {
     if (convo.otherUser.id === id) {
@@ -90,18 +96,21 @@ export const removeOfflineUserFromStore = (state, id) => {
   });
 };
 
+/** When user searches for other users put a fake conversaton in store
+ * for each found user with no coversaton yet. This allows ActiveChat
+ * to mount correctly and chat to be initalized. */
 export const addSearchedUsersToStore = (state, users) => {
-  const currentUsers = {};
+  const currentUsers = new Set();
 
   // make table of current users so we can lookup faster
   state.forEach(convo => {
-    currentUsers[convo.otherUser.id] = true;
+    currentUsers.add(convo.otherUser.id);
   });
 
   const newState = [...state];
   users.forEach(user => {
     // only create a fake convo if we don't already have a convo with this user
-    if (!currentUsers[user.id]) {
+    if (!currentUsers.has(user.id)) {
       let fakeConvo = { otherUser: user, messages: [] };
       newState.push(fakeConvo);
     }
@@ -110,6 +119,7 @@ export const addSearchedUsersToStore = (state, users) => {
   return newState;
 };
 
+/** Add a new conversation to store. */
 export const addNewConvoToStore = (state, recipientId, message) => {
   return state.map(convo => {
     if (convo.otherUser.id === recipientId) {
@@ -124,6 +134,7 @@ export const addNewConvoToStore = (state, recipientId, message) => {
   });
 };
 
+/** Mark recieved messages of a conversaton as read. */
 export const markMessagesRead = (state, payload) => {
   const { conversationId } = payload;
   return state.map(convo => {
@@ -141,6 +152,7 @@ export const markMessagesRead = (state, payload) => {
   });
 };
 
+/** Mark sent messages of a conversation as read. */
 export const markOwnMessagesRead = (state, payload) => {
   const { conversationId } = payload;
   return state.map(convo => {

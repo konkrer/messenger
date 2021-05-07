@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { fetchUser } from './store/utils/thunkCreators';
+import { setUserErrorNull } from './store/user';
 import Signup from './Signup.js';
 import Login from './Login.js';
 import { Home, SnackbarError } from './components';
 
-const Routes = ({ user, fetchUser }) => {
+const Routes = ({ user, fetchUser, setUserErrorNull }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [snackBarOpen, setSnackBarOpen] = useState(false);
 
@@ -23,8 +24,9 @@ const Routes = ({ user, fetchUser }) => {
         setErrorMessage('Internal Server Error. Please try again');
       }
       setSnackBarOpen(true);
+      setUserErrorNull();
     }
-  }, [user.error]);
+  }, [user.error, setUserErrorNull]);
 
   if (user.isFetchingUser) {
     return <div>Loading...</div>;
@@ -63,6 +65,9 @@ const mapDispatchToProps = dispatch => {
   return {
     fetchUser() {
       dispatch(fetchUser());
+    },
+    setUserErrorNull() {
+      dispatch(setUserErrorNull());
     },
   };
 };

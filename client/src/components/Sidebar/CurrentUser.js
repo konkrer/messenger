@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Box, Typography, Button, Drawer } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { connect } from 'react-redux';
 import { BadgeAvatar } from './index';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
@@ -44,8 +43,9 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const CurrentUser = ({ user = {} }) => {
+const CurrentUser = () => {
   const classes = useStyles();
+  const user = useSelector(state => state.user);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const dispatch = useDispatch();
 
@@ -83,10 +83,4 @@ const CurrentUser = ({ user = {} }) => {
   );
 };
 
-const mapStateToProps = state => {
-  return {
-    user: state.user,
-  };
-};
-
-export default connect(mapStateToProps)(CurrentUser);
+export default CurrentUser;

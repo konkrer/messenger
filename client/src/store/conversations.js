@@ -21,7 +21,7 @@ const SET_SEARCHED_USERS = 'SET_SEARCHED_USERS';
 const CLEAR_SEARCHED_USERS = 'CLEAR_SEARCHED_USERS';
 const ADD_CONVERSATION = 'ADD_CONVERSATION';
 const MESSAGES_READ = 'MESSAGES_READ';
-const SET__UNREAD_MESSAGE = 'SET__UNREAD_MESSAGE';
+const SET_UNREAD_MESSAGE = 'SET_UNREAD_MESSAGE';
 const OWN_MESSAGES_READ = 'OWN_MESSAGES_READ';
 
 // ACTION CREATORS
@@ -40,13 +40,15 @@ export const setNewMessage = (message, sender) => {
   };
 };
 
+// add a new message to unread messages for a conversation
 export const setNewUnreadMessage = message => {
   return {
-    type: SET__UNREAD_MESSAGE,
+    type: SET_UNREAD_MESSAGE,
     payload: { message },
   };
 };
 
+// add a message from this user from another user-agent
 export const setNewOwnMessage = (message, sender, user) => {
   return {
     type: SET_OWN_MESSAGE,
@@ -89,6 +91,7 @@ export const addConversation = (recipientId, newMessage) => {
   };
 };
 
+// when received messages have been viewed set messages read.
 export const setMessagesRead = conversationId => {
   return {
     type: MESSAGES_READ,
@@ -96,6 +99,7 @@ export const setMessagesRead = conversationId => {
   };
 };
 
+// when sent messages have been viewed set own messages read.
 export const setOwnMessagesRead = conversationId => {
   return {
     type: OWN_MESSAGES_READ,
@@ -133,7 +137,7 @@ const reducer = (state = [], action) => {
       return markMessagesRead(state, action.payload);
     case OWN_MESSAGES_READ:
       return markOwnMessagesRead(state, action.payload);
-    case SET__UNREAD_MESSAGE:
+    case SET_UNREAD_MESSAGE:
       return addMessageToUnRead(state, action.payload);
     default:
       return state;
