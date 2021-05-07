@@ -46,9 +46,9 @@ const ActiveChat = ({ user, conversation = {} }) => {
   // with unread messages.
   useEffect(() => {
     if (conversation.unreadMessages?.length > 0) {
-      dispatch(messagesRead(conversation));
+      dispatch(messagesRead(conversation, user.id));
     }
-  }, [conversation, dispatch]);
+  }, [conversation, dispatch, user.id]);
 
   return (
     <Box className={classes.root}>

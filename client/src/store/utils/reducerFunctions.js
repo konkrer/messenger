@@ -30,8 +30,35 @@ export const addMessageToUnRead = (state, payload) => {
   return state.map(convo => {
     if (convo.id === message.conversationId) {
       const convoCopy = { ...convo };
-      if (convoCopy.unreadMessages) convoCopy.unreadMessages.push(message.id);
-      else convoCopy.unreadMessages = [message.id];
+      convoCopy.unreadMessages = convoCopy.unreadMessages
+        ? [...convoCopy.unreadMessages, message.id]
+        : [message.id];
+      return convoCopy;
+    } else {
+      return convo;
+    }
+  });
+};
+
+export const addOwnMessageToStore = (state, payload) => {
+  const { message, sender, user } = payload;
+  // if sender isn't null, that means the message needs to be put in a brand new convo
+  if (sender !== null) {
+    const newConvo = {
+      id: message.conversationId,
+      otherUser: user,
+      messages: [message],
+      unreadMessages: [],
+    };
+    newConvo.latestMessageText = message.text;
+    return [newConvo, ...state];
+  }
+
+  return state.map(convo => {
+    if (convo.id === message.conversationId) {
+      const convoCopy = { ...convo };
+      convoCopy.messages = [...convoCopy.messages, message];
+      convoCopy.latestMessageText = message.text;
       return convoCopy;
     } else {
       return convo;

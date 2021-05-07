@@ -5,10 +5,13 @@ import store from './store';
 import {
   setNewMessage,
   setNewUnreadMessage,
+  setNewOwnMessage,
   setOwnMessagesRead,
+  setMessagesRead,
   removeOfflineUser,
   addOnlineUser,
 } from './store/conversations';
+import { getCookie } from './utils/cookieHelper';
 
 const socket = io(window.location.origin);
 
@@ -24,13 +27,21 @@ socket.on('connect', async () => {
     store.dispatch(removeOfflineUser(id));
   });
 
-  socket.on('new-message', data => {
-    store.dispatch(setNewMessage(data.message, data.sender));
-    store.dispatch(setNewUnreadMessage(data.message));
+  socket.on('new-message', ({ message, sender }) => {
+    store.dispatch(setNewMessage(message, sender));
+    store.dispatch(setNewUnreadMessage(message));
   });
 
-  socket.on('messages-read', ({ conversationId }) => {
+  socket.on('new-own-message', ({ message, sender }) => {
+    store.dispatch(setNewOwnMessage(message, sender, store.getState().user));
+  });
+
+  socket.on('sender-messages-read', ({ conversationId }) => {
     store.dispatch(setOwnMessagesRead(conversationId));
+  });
+
+  socket.on('recipient-messages-read', ({ conversationId }) => {
+    store.dispatch(setMessagesRead(conversationId));
   });
 
   // if user is signed in but this socket has just connected (i.e. page refresh)
@@ -38,7 +49,8 @@ socket.on('connect', async () => {
   try {
     const userId = store.getState().user.id;
     if (userId) {
-      socket.emit('add-online-user', userId, socket.id);
+      const userAgentId = getCookie('userAgentId');
+      socket.emit('add-online-user', userId, socket.id, userAgentId);
     }
   } catch (error) {
     console.error(error);

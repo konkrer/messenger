@@ -1,4 +1,6 @@
 import axios from 'axios';
+
+// local
 import socket from '../../socket';
 import {
   gotConversations,
@@ -8,6 +10,9 @@ import {
   setMessagesRead,
 } from '../conversations';
 import { gotUser, setFetchingStatus } from '../user';
+import { getCookie } from '../../utils/cookieHelper';
+
+axios.defaults.withCredentials = true;
 
 axios.interceptors.request.use(async function (config) {
   const token = await localStorage.getItem('messenger-token');
@@ -24,7 +29,8 @@ export const fetchUser = () => async dispatch => {
     const { data } = await axios.get('/auth/user');
     dispatch(gotUser(data));
     if (data.id && socket.id) {
-      socket.emit('add-online-user', data.id, socket.id);
+      const userAgentId = getCookie('userAgentId');
+      socket.emit('add-online-user', data.id, socket.id, userAgentId);
     }
   } catch (error) {
     console.error(error);
@@ -38,7 +44,8 @@ export const register = credentials => async dispatch => {
     const { data } = await axios.post('/auth/register', credentials);
     await localStorage.setItem('messenger-token', data.token);
     dispatch(gotUser(data));
-    socket.emit('add-online-user', data.id, socket.id);
+    const userAgentId = getCookie('userAgentId');
+    socket.emit('add-online-user', data.id, socket.id, userAgentId);
   } catch (error) {
     console.error(error);
     dispatch(gotUser({ error: error.response.data.error || 'Server Error' }));
@@ -50,7 +57,8 @@ export const login = credentials => async dispatch => {
     const { data } = await axios.post('/auth/login', credentials);
     await localStorage.setItem('messenger-token', data.token);
     dispatch(gotUser(data));
-    socket.emit('add-online-user', data.id, socket.id);
+    const userAgentId = getCookie('userAgentId');
+    socket.emit('add-online-user', data.id, socket.id, userAgentId);
   } catch (error) {
     console.error(error);
     dispatch(gotUser({ error: error.response.data.error || 'Server Error' }));
@@ -59,11 +67,11 @@ export const login = credentials => async dispatch => {
 
 export const logout = id => async dispatch => {
   try {
-    // calling this doesn't do anything in the back-end currently
-    await axios.delete('/auth/logout');
     await localStorage.removeItem('messenger-token');
     dispatch(gotUser({}));
-    socket.emit('remove-offline-user', id);
+    const userAgentId = getCookie('userAgentId');
+    socket.emit('remove-offline-user', id, userAgentId);
+    await axios.delete('/auth/logout');
   } catch (error) {
     console.error(error);
   }
@@ -90,6 +98,7 @@ const sendMessage = (data, body) => {
     message: data.message,
     recipientId: body.recipientId,
     sender: data.sender,
+    senderSkipSocket: socket.id,
   });
 };
 
@@ -115,21 +124,23 @@ const saveMessagesRead = async body => {
   await axios.post('/api/messages/read', body);
 };
 
-const sendMessagesRead = conversation => {
+const sendMessagesRead = (conversation, userId) => {
   socket.emit('messages-read', {
     conversationId: conversation.id,
-    otherUser: conversation.otherUser,
+    senderId: conversation.otherUser.id,
+    recipientId: userId,
+    recipientSocketSkip: socket.id,
   });
 };
 
-// mark messages read in DB, Redux store, and socket event.
-export const messagesRead = conversation => async dispatch => {
+// mark messages read in DB, Redux store, and emit socket event.
+export const messagesRead = (conversation, userId) => async dispatch => {
   try {
     await saveMessagesRead({ readMessages: conversation.unreadMessages });
 
     dispatch(setMessagesRead(conversation.id));
 
-    sendMessagesRead(conversation);
+    sendMessagesRead(conversation, userId);
   } catch (error) {
     console.error(error);
   }
