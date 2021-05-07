@@ -11,6 +11,11 @@ const useStyles = makeStyles(theme => ({
     height: 89,
     marginBottom: 34,
     boxShadow: '0 2px 20px 0 rgba(88,133,196,0.10)',
+    position: 'sticky',
+    top: 0,
+    background: 'white',
+    zIndex: 10,
+    flexShrink: 0,
   },
   content: {
     display: 'flex',

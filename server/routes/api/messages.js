@@ -43,4 +43,23 @@ router.post('/', async (req, res, next) => {
   }
 });
 
+router.post('/read', (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.sendStatus(401);
+    }
+    if (!req.body.readMessages || !Array.isArray(req.body.readMessages)) {
+      return res.sendStatus(400);
+    }
+    const readerId = req.user.id;
+    const { readMessages } = req.body;
+
+    Message.markRead(readMessages, readerId);
+
+    res.json({ stats: 'marked read' });
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

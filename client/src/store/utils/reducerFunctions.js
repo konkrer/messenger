@@ -6,6 +6,7 @@ export const addMessageToStore = (state, payload) => {
       id: message.conversationId,
       otherUser: sender,
       messages: [message],
+      unreadMessages: [],
     };
     newConvo.latestMessageText = message.text;
     return [newConvo, ...state];
@@ -16,6 +17,21 @@ export const addMessageToStore = (state, payload) => {
       const convoCopy = { ...convo };
       convoCopy.messages = [...convoCopy.messages, message];
       convoCopy.latestMessageText = message.text;
+      return convoCopy;
+    } else {
+      return convo;
+    }
+  });
+};
+
+export const addMessageToUnRead = (state, payload) => {
+  const { message } = payload;
+
+  return state.map(convo => {
+    if (convo.id === message.conversationId) {
+      const convoCopy = { ...convo };
+      if (convoCopy.unreadMessages) convoCopy.unreadMessages.push(message.id);
+      else convoCopy.unreadMessages = [message.id];
       return convoCopy;
     } else {
       return convo;
@@ -75,6 +91,39 @@ export const addNewConvoToStore = (state, recipientId, message) => {
       newConvo.messages.push(message);
       newConvo.latestMessageText = message.text;
       return newConvo;
+    } else {
+      return convo;
+    }
+  });
+};
+
+export const markMessagesRead = (state, payload) => {
+  const { conversationId } = payload;
+  return state.map(convo => {
+    if (convo.id === conversationId) {
+      convo.unreadMessages = [];
+      const convoCopy = { ...convo };
+      convoCopy.messages = convo.messages.map(msg => {
+        if (msg.senderId === convo.otherUser.id) msg.messageRead = true;
+        return msg;
+      });
+      return convoCopy;
+    } else {
+      return convo;
+    }
+  });
+};
+
+export const markOwnMessagesRead = (state, payload) => {
+  const { conversationId } = payload;
+  return state.map(convo => {
+    if (convo.id === conversationId) {
+      const convoCopy = { ...convo };
+      convoCopy.messages = convo.messages.map(msg => {
+        if (msg.senderId !== convo.otherUser.id) msg.messageRead = true;
+        return msg;
+      });
+      return convoCopy;
     } else {
       return convo;
     }

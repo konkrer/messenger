@@ -1,12 +1,12 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 // local
-import bgImg from '../assets/bg_img_friends_on_steps.png';
+import bgImg from '../../assets/bg_img_friends_on_steps.png';
 
 /** Page styles for Signup and Login pages */
 
 export const useStyles = makeStyles(theme => ({
-  mainGrid: {
+  root: {
     height: '100vh',
   },
   imgPanel: {

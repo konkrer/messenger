@@ -5,6 +5,7 @@ import {
   addConversation,
   setNewMessage,
   setSearchedUsers,
+  setMessagesRead,
 } from '../conversations';
 import { gotUser, setFetchingStatus } from '../user';
 
@@ -105,6 +106,30 @@ export const postMessage = body => async dispatch => {
     }
 
     sendMessage(data, body);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const saveMessagesRead = async body => {
+  await axios.post('/api/messages/read', body);
+};
+
+const sendMessagesRead = conversation => {
+  socket.emit('messages-read', {
+    conversationId: conversation.id,
+    otherUser: conversation.otherUser,
+  });
+};
+
+// mark messages read in DB, Redux store, and socket event.
+export const messagesRead = conversation => async dispatch => {
+  try {
+    await saveMessagesRead({ readMessages: conversation.unreadMessages });
+
+    dispatch(setMessagesRead(conversation.id));
+
+    sendMessagesRead(conversation);
   } catch (error) {
     console.error(error);
   }

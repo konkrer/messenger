@@ -2,8 +2,8 @@ import { useHistory } from 'react-router-dom';
 import { Grid, Box, Typography, Button, Hidden, Link } from '@material-ui/core';
 
 // local
-import { useStyles } from '../themes/signupLogin';
-import Bubble from '../assets/text_bubble.svg';
+import { useStyles } from './signupLoginGridStyles';
+import Bubble from '../../assets/text_bubble.svg';
 
 /**
  * Return dictionary object with appropriate text for either the login or signup page.
@@ -46,7 +46,7 @@ const SignupLoginGrid = ({
   const text = pageText(page);
 
   return (
-    <Grid container className={classes.mainGrid}>
+    <Grid container className={classes.root}>
       <Grid
         container
         item

@@ -52,6 +52,13 @@ io.on('connection', socket => {
       socket.broadcast.emit('remove-offline-user', id);
     }
   });
+
+  socket.on('messages-read', ({ conversationId, otherUser }) => {
+    const recipientSocketId = onlineUsers[otherUser.id];
+    socket.to(recipientSocketId).emit('messages-read', {
+      conversationId,
+    });
+  });
 });
 
 sessionStore

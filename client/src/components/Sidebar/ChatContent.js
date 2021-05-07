@@ -17,12 +17,15 @@ const useStyles = makeStyles(theme => ({
     fontSize: 12,
     color: '#9CADC8',
     letterSpacing: -0.17,
+    maxWidth: '25ch',
+    overflow: 'hidden',
   },
   notification: {
     height: 20,
     width: 20,
     backgroundColor: '#3F92FF',
     marginRight: 10,
+    marginTop: 10,
     color: 'white',
     fontSize: 10,
     letterSpacing: -0.5,
@@ -40,7 +43,7 @@ const ChatContent = ({ conversation }) => {
   const { latestMessageText, otherUser } = conversation;
 
   return (
-    <Box className={classes.root}>
+    <Box className={classes.root} textOverflow="ellipsis">
       <Box>
         <Typography className={classes.username}>
           {otherUser.username}
@@ -49,6 +52,11 @@ const ChatContent = ({ conversation }) => {
           {latestMessageText}
         </Typography>
       </Box>
+      {conversation.unreadMessages?.length > 0 && (
+        <Box component="span" className={classes.notification}>
+          {conversation.unreadMessages.length}
+        </Box>
+      )}
     </Box>
   );
 };
