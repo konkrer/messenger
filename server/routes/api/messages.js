@@ -28,7 +28,7 @@ router.post('/', async (req, res, next) => {
         user1Id: senderId,
         user2Id: recipientId,
       });
-      if (onlineUsers[sender.id]) {
+      if (onlineUsers.has(sender.id)) {
         sender.online = true;
       }
     }
@@ -44,7 +44,8 @@ router.post('/', async (req, res, next) => {
 });
 
 // Set messageRead to true for messages that have been read by user.
-// Expects an array named "readMessages" containing the message ids.
+// Expects an array named "readMessages" containing the message ids
+// and the conversation ID.
 router.post('/read', (req, res, next) => {
   try {
     if (!req.user) {

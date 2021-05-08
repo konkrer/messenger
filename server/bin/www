@@ -31,83 +31,56 @@ const server = http.createServer(app);
 
 const io = require('socket.io')(server);
 
+// new user socket comes online
 io.on('connection', socket => {
-  // new user comes online, user opens new user-agent,
-  // socket connection for user-agent restarted
-  socket.on('add-online-user', (id, socketId, userAgentId) => {
-    // if user has no user-agents-obj in onlineUsers object create one
-    if (!onlineUsers[id]) {
-      onlineUsers[id] = { [userAgentId]: socketId };
+  // new online user data received
+  socket.on('add-online-user', id => {
+    if (!onlineUsers.has(id)) {
+      onlineUsers.add(id);
       // send the user who just went online to everyone else who is already online
       socket.broadcast.emit('add-online-user', id);
-    } else {
-      // add set socketId for this userAgent in user's user-agent-obj
-      onlineUsers[id][userAgentId] = socketId;
     }
+    // join room named with user id
+    socket.join(id);
   });
 
   // user sends new message
-  socket.on(
-    'new-message',
-    ({ message, recipientId, sender, senderSkipSocket }) => {
-      // send messages to all recipient sockets if user is online
-      const recipientUserAgentsObj = onlineUsers[recipientId];
-      if (recipientUserAgentsObj) {
-        Object.values(recipientUserAgentsObj).forEach(socketId => {
-          socket.to(socketId).emit('new-message', {
-            message,
-            sender,
-          });
-        });
-      }
-      // send message to all own sockets except sending socket
-      Object.values(onlineUsers[message.senderId]).forEach(socketId => {
-        if (socketId !== senderSkipSocket) {
-          socket.to(socketId).emit('new-own-message', {
-            message,
-            sender,
-          });
-        }
+  socket.on('new-message', ({ message, recipientId, sender, senderId }) => {
+    // send message-read to all sender sockets if sender is online
+    if (onlineUsers.has(recipientId))
+      socket.to(recipientId).emit('new-message', {
+        message,
+        sender,
       });
-    }
-  );
+    // send message-own-read to all reader sockets
+    socket.to(senderId).emit('new-own-message', {
+      message,
+      sender,
+    });
+  });
 
   // user logs out
-  socket.on('remove-offline-user', (id, userAgentId) => {
-    const userAgentsObj = onlineUsers[id];
-    // if userAgentId is online (in obj) delete that userAgent
-    if (userAgentsObj && userAgentsObj[userAgentId]) {
-      delete onlineUsers[id][userAgentId];
-      // if that was the only userAgent for user delete userAgentsObj
-      if (Object.keys(onlineUsers[id]).length === 0) {
-        delete onlineUsers[id];
-        socket.broadcast.emit('remove-offline-user', id);
-      }
-    }
+  socket.on('remove-offline-user', id => {
+    socket.leave(id);
   });
 
   // when sent messages have been read
-  socket.on(
-    'messages-read',
-    ({ conversationId, senderId, recipientId, recipientSocketSkip }) => {
-      // send message-read to all sender sockets if sender is online
-      const senderUserAgentsObj = onlineUsers[senderId];
-      if (senderUserAgentsObj) {
-        Object.values(senderUserAgentsObj).forEach(socketId => {
-          socket.to(socketId).emit('sender-messages-read', {
-            conversationId,
-          });
-        });
-      }
-      // send message-read to all own sockets except sending socket
-      Object.values(onlineUsers[recipientId]).forEach(socketId => {
-        if (socketId !== recipientSocketSkip)
-          socket.to(socketId).emit('recipient-messages-read', {
-            conversationId,
-          });
+  socket.on('messages-read', ({ conversationId, senderId, recipientId }) => {
+    // send message-read to all sender sockets if sender is online
+    if (onlineUsers.has(recipientId))
+      socket.to(senderId).emit('sender-messages-read', {
+        conversationId,
       });
-    }
-  );
+    // send message-read to all own sockets except sending socket
+    socket.to(recipientId).emit('recipient-messages-read', {
+      conversationId,
+    });
+  });
+});
+
+io.of('/').adapter.on('delete-room', room => {
+  onlineUsers.delete(room);
+  io.emit('remove-offline-user', room);
 });
 
 sessionStore

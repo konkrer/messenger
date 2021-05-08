@@ -10,7 +10,6 @@ import {
   setMessagesRead,
 } from '../conversations';
 import { gotUser, setFetchingStatus } from '../user';
-import { getCookie } from '../../utils/cookieHelper';
 
 axios.defaults.withCredentials = true;
 
@@ -29,8 +28,7 @@ export const fetchUser = () => async dispatch => {
     const { data } = await axios.get('/auth/user');
     dispatch(gotUser(data));
     if (data.id && socket.id) {
-      const userAgentId = getCookie('userAgentId');
-      socket.emit('add-online-user', data.id, socket.id, userAgentId);
+      socket.emit('add-online-user', data.id);
     }
   } catch (error) {
     console.error(error);
@@ -44,8 +42,7 @@ export const register = credentials => async dispatch => {
     const { data } = await axios.post('/auth/register', credentials);
     await localStorage.setItem('messenger-token', data.token);
     dispatch(gotUser(data));
-    const userAgentId = getCookie('userAgentId');
-    socket.emit('add-online-user', data.id, socket.id, userAgentId);
+    socket.emit('add-online-user', data.id);
   } catch (error) {
     console.error(error);
     dispatch(gotUser({ error: error.response.data.error || 'Server Error' }));
@@ -57,8 +54,7 @@ export const login = credentials => async dispatch => {
     const { data } = await axios.post('/auth/login', credentials);
     await localStorage.setItem('messenger-token', data.token);
     dispatch(gotUser(data));
-    const userAgentId = getCookie('userAgentId');
-    socket.emit('add-online-user', data.id, socket.id, userAgentId);
+    socket.emit('add-online-user', data.id);
   } catch (error) {
     console.error(error);
     dispatch(gotUser({ error: error.response.data.error || 'Server Error' }));
@@ -69,8 +65,7 @@ export const logout = id => async dispatch => {
   try {
     await localStorage.removeItem('messenger-token');
     dispatch(gotUser({}));
-    const userAgentId = getCookie('userAgentId');
-    socket.emit('remove-offline-user', id, userAgentId);
+    socket.emit('remove-offline-user', id);
     await axios.delete('/auth/logout');
   } catch (error) {
     console.error(error);
@@ -98,7 +93,7 @@ const sendMessage = (data, body) => {
     message: data.message,
     recipientId: body.recipientId,
     sender: data.sender,
-    senderSkipSocket: socket.id,
+    senderId: body.senderId,
   });
 };
 
@@ -129,7 +124,6 @@ const sendMessagesRead = (conversation, userId) => {
     conversationId: conversation.id,
     senderId: conversation.otherUser.id,
     recipientId: userId,
-    recipientSocketSkip: socket.id,
   });
 };
 
