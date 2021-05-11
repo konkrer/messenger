@@ -1,9 +1,14 @@
-import React from 'react';
+import { memo } from 'react';
 import { Avatar, Box, makeStyles } from '@material-ui/core';
 import { SenderBubble, OtherUserBubble } from '../ActiveChat';
 import moment from 'moment';
 
 const useStyles = makeStyles(() => ({
+  root: {
+    fontSize: '1.5rem',
+    letterSpacing: -0.2,
+    fontWeight: 'bold',
+  },
   confirmationBox: {
     position: 'absolute',
     width: '100%',
@@ -19,6 +24,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+/** Find the index of the last message user sent for showing the message read indicator. */
 const indexOfLastOwnMessage = (messages, userId) => {
   for (let i = messages.length - 1; i >= 0; i--) {
     if (messages[i].senderId === userId) return i;
@@ -31,7 +37,7 @@ const Messages = ({ messages, otherUser, userId }) => {
   const idxLastOwnMessage = indexOfLastOwnMessage(messages, userId);
 
   return (
-    <Box>
+    <Box className={classes.root}>
       {messages.map((message, idx) => {
         const time = moment(message.createdAt).format('h:mm');
         const latestOwnMessage = idx === idxLastOwnMessage;
@@ -62,4 +68,4 @@ const Messages = ({ messages, otherUser, userId }) => {
   );
 };
 
-export default Messages;
+export default memo(Messages);

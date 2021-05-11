@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -14,9 +14,25 @@ const styles = {
 };
 
 const Home = ({ fetchConversations, classes, user }) => {
+  const [documentVisible, setDocumentVisible] = useState(true);
+
+  const setDocumentVisibleHandler = () => {
+    setDocumentVisible(document.visibilityState === 'visible');
+  };
+
   useEffect(() => {
     fetchConversations();
   }, [fetchConversations]);
+
+  useEffect(() => {
+    document.addEventListener('visibilitychange', setDocumentVisibleHandler);
+    return () => {
+      document.removeEventListener(
+        'visibilitychange',
+        setDocumentVisibleHandler
+      );
+    };
+  }, []);
 
   if (!user.id) {
     return <Redirect to="/login" />;
@@ -24,11 +40,11 @@ const Home = ({ fetchConversations, classes, user }) => {
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
-      <Grid item xs={12} md={4}>
+      <Grid item xs={12} sm={4}>
         <SidebarContainer />
       </Grid>
-      <Grid item xs={12} md={8}>
-        <ActiveChat />
+      <Grid item xs={12} sm={8}>
+        <ActiveChat documentVisible={documentVisible} />
       </Grid>
     </Grid>
   );

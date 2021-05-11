@@ -10,11 +10,14 @@ import {
   setMessagesRead,
   removeOfflineUser,
   addOnlineUser,
+  setSenderTyping,
+  resetSenderTyping,
 } from './store/conversations';
 
 const socket = io(window.location.origin);
 
 socket.on('connect', async () => {
+  let messageTypingTimer;
   // new user comes online
   socket.on('add-online-user', id => {
     store.dispatch(addOnlineUser(id));
@@ -25,8 +28,10 @@ socket.on('connect', async () => {
   });
   // new message received
   socket.on('new-message', ({ message, sender }) => {
+    clearTimeout(messageTypingTimer);
     store.dispatch(setNewMessage(message, sender));
     store.dispatch(setNewUnreadMessage(message));
+    store.dispatch(resetSenderTyping(message.conversationId));
   });
   // new message frow this user from another user-agent connection
   socket.on('new-own-message', ({ message, sender }) => {
@@ -40,6 +45,14 @@ socket.on('connect', async () => {
   // Removes unread messages notifications badge.
   socket.on('recipient-messages-read', ({ conversationId }) => {
     store.dispatch(setMessagesRead(conversationId));
+  });
+  // Another user is typing a message in a chat with this user.
+  socket.on('sender-typing', ({ conversationId }) => {
+    clearTimeout(messageTypingTimer);
+    store.dispatch(setSenderTyping(conversationId));
+    messageTypingTimer = setTimeout(() => {
+      store.dispatch(resetSenderTyping(conversationId));
+    }, 2000);
   });
 
   // if user is signed in but this socket has just connected (i.e. page refresh)

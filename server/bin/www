@@ -76,6 +76,13 @@ io.on('connection', socket => {
       conversationId,
     });
   });
+
+  // when sender is typing
+  socket.on('sender-typing', ({ conversationId, otherUserId }) => {
+    if (onlineUsers.has(otherUserId)) {
+      socket.to(otherUserId).emit('sender-typing', { conversationId });
+    }
+  });
 });
 
 // when a room is deleted from having no more sockets present

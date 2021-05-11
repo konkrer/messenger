@@ -5,14 +5,15 @@ import { Box } from '@material-ui/core';
 
 // local
 import { messagesRead } from '../../store/utils/thunkCreators';
-import { Input, Header, Messages } from './index';
+import { Input, Header, Messages, OtherUserBubble } from './index';
 
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
     maxHeight: '100vh',
-    overflow: 'auto',
+    overflowY: 'auto',
+    overflowX: 'hidden',
     [theme.breakpoints.up('md')]: {
       minHeight: '100vh',
     },
@@ -27,7 +28,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const ActiveChat = ({ user, conversation = {} }) => {
+const ActiveChat = ({ user, conversation = {}, documentVisible }) => {
   const classes = useStyles();
   const messagesLengthRef = useRef(conversation.messages?.length || 0);
   const messageInput = useRef(null);
@@ -47,10 +48,10 @@ const ActiveChat = ({ user, conversation = {} }) => {
   // mark messages read when active chat is showing a conversation
   // with unread messages.
   useEffect(() => {
-    if (conversation.unreadMessages?.length > 0) {
+    if (conversation.unreadMessages?.length > 0 && documentVisible) {
       dispatch(messagesRead(conversation, user.id));
     }
-  }, [conversation, dispatch, user.id]);
+  }, [conversation, dispatch, user.id, documentVisible]);
 
   return (
     <Box className={classes.root}>
@@ -61,11 +62,22 @@ const ActiveChat = ({ user, conversation = {} }) => {
             online={conversation.otherUser.online || false}
           />
           <Box className={classes.chatContainer}>
-            <Messages
-              messages={conversation.messages}
-              otherUser={conversation.otherUser}
-              userId={user.id}
-            />
+            <Box>
+              <Messages
+                messages={conversation.messages}
+                otherUser={conversation.otherUser}
+                userId={user.id}
+              />
+              {/* Show other user typing indicator when other user is typing */}
+              {conversation.senderTyping && (
+                <OtherUserBubble
+                  text={null}
+                  time={'Now'}
+                  otherUser={conversation.otherUser}
+                />
+              )}
+            </Box>
+            {/* End other user typing indicator. */}
             <Input
               otherUser={conversation.otherUser}
               conversationId={conversation.id}

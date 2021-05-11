@@ -8,6 +8,8 @@ import {
   markMessagesRead,
   markOwnMessagesRead,
   addMessageToUnRead,
+  setSenderTypingTrue,
+  setSenderTypingFalse,
 } from './utils/reducerFunctions';
 
 // ACTIONS
@@ -23,6 +25,8 @@ const ADD_CONVERSATION = 'ADD_CONVERSATION';
 const MESSAGES_READ = 'MESSAGES_READ';
 const SET_UNREAD_MESSAGE = 'SET_UNREAD_MESSAGE';
 const OWN_MESSAGES_READ = 'OWN_MESSAGES_READ';
+const SENDER_TYPING = 'SENDER_TYPING';
+const RESET_SENDER_TYPING = 'RESET_SENDER_TYPING';
 
 // ACTION CREATORS
 
@@ -107,6 +111,22 @@ export const setOwnMessagesRead = conversationId => {
   };
 };
 
+// when conversation sender is typing.
+export const setSenderTyping = conversationId => {
+  return {
+    type: SENDER_TYPING,
+    payload: { conversationId },
+  };
+};
+
+// when sender typing icon should be reset.
+export const resetSenderTyping = conversationId => {
+  return {
+    type: RESET_SENDER_TYPING,
+    payload: { conversationId },
+  };
+};
+
 // REDUCER
 
 const reducer = (state = [], action) => {
@@ -139,6 +159,10 @@ const reducer = (state = [], action) => {
       return markOwnMessagesRead(state, action.payload);
     case SET_UNREAD_MESSAGE:
       return addMessageToUnRead(state, action.payload);
+    case SENDER_TYPING:
+      return setSenderTypingTrue(state, action.payload);
+    case RESET_SENDER_TYPING:
+      return setSenderTypingFalse(state, action.payload);
     default:
       return state;
   }

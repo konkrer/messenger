@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { FormControl, FilledInput } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
+
+// local
 import { postMessage } from '../../store/utils/thunkCreators';
+import socket from '../../socket';
 
 const styles = {
   root: {
     justifySelf: 'flex-end',
-    marginTop: 20,
+    marginTop: 35,
   },
   input: {
     height: 70,
@@ -29,14 +32,17 @@ const Input = ({
 
   const handleChange = event => {
     setText(event.target.value);
+    socket.emit('sender-typing', { conversationId, otherUserId: otherUser.id });
   };
 
   const handleSubmit = async event => {
     event.preventDefault();
+    const text = event.target.text.value;
+    if (!text) return;
     // add sender user info if posting to a brand new convo,
     // so that the other user will have access to username, profile pic, etc.
     const reqBody = {
-      text: event.target.text.value,
+      text,
       recipientId: otherUser.id,
       conversationId: conversationId,
       sender: conversationId ? null : user,

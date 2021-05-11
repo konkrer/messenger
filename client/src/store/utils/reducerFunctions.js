@@ -96,9 +96,9 @@ export const removeOfflineUserFromStore = (state, id) => {
   });
 };
 
-/** When user searches for other users put a fake conversaton in store
- * for each found user with no coversaton yet. This allows ActiveChat
- * to mount correctly and chat to be initalized. */
+/** When user searches for other users put a fake conversation in store
+ * for each found user with no conversation yet. This allows ActiveChat
+ * to mount correctly and chat to be initialized. */
 export const addSearchedUsersToStore = (state, users) => {
   const currentUsers = new Set();
 
@@ -134,7 +134,7 @@ export const addNewConvoToStore = (state, recipientId, message) => {
   });
 };
 
-/** Mark recieved messages of a conversaton as read. */
+/** Mark received messages of a conversation as read. */
 export const markMessagesRead = (state, payload) => {
   const { conversationId } = payload;
   return state.map(convo => {
@@ -163,6 +163,28 @@ export const markOwnMessagesRead = (state, payload) => {
         return msg;
       });
       return convoCopy;
+    } else {
+      return convo;
+    }
+  });
+};
+
+/** Set sender typing true for conversation */
+export const setSenderTypingTrue = (state, payload) => {
+  return state.map(convo => {
+    if (convo.id === payload.conversationId) {
+      return { ...convo, senderTyping: true };
+    } else {
+      return convo;
+    }
+  });
+};
+
+/** Set sender typing true for conversation */
+export const setSenderTypingFalse = (state, payload) => {
+  return state.map(convo => {
+    if (convo.id === payload.conversationId) {
+      return { ...convo, senderTyping: false };
     } else {
       return convo;
     }

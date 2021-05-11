@@ -7,7 +7,7 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-end',
-    margin: '10px 0px',
+    marginTop: '20px',
   },
   date: {
     fontSize: 11,
@@ -16,11 +16,8 @@ const useStyles = makeStyles(() => ({
     marginBottom: 5,
   },
   text: {
-    fontSize: 14,
     color: '#91A3C0',
-    letterSpacing: -0.2,
     padding: 8,
-    fontWeight: 'bold',
   },
   bubble: {
     background: '#F4F6FA',
