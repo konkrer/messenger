@@ -1,3 +1,4 @@
+/**  When a new message is received or created add to store. */
 export const addMessageToStore = (state, payload) => {
   const { message, sender } = payload;
   // if sender isn't null, that means the message needs to be put in a brand new convo
@@ -6,6 +7,7 @@ export const addMessageToStore = (state, payload) => {
       id: message.conversationId,
       otherUser: sender,
       messages: [message],
+      unreadMessages: [],
     };
     newConvo.latestMessageText = message.text;
     return [newConvo, ...state];
@@ -23,6 +25,53 @@ export const addMessageToStore = (state, payload) => {
   });
 };
 
+/** When new messages is received add message ids to
+ * unread messages array for this conversation */
+export const addMessageToUnRead = (state, payload) => {
+  const { message } = payload;
+
+  return state.map(convo => {
+    if (convo.id === message.conversationId) {
+      const convoCopy = { ...convo };
+      convoCopy.unreadMessages = convoCopy.unreadMessages
+        ? [...convoCopy.unreadMessages, message.id]
+        : [message.id];
+      return convoCopy;
+    } else {
+      return convo;
+    }
+  });
+};
+
+/** When the user has sent a new message from a different device update the local state
+ *  adding the new message to the appropriate conversation's array of messages. */
+export const addOwnMessageToStore = (state, payload) => {
+  const { message, sender, user } = payload;
+  // if sender isn't null, that means the message needs to be put in a brand new convo
+  if (sender !== null) {
+    const newConvo = {
+      id: message.conversationId,
+      otherUser: user,
+      messages: [message],
+      unreadMessages: [],
+    };
+    newConvo.latestMessageText = message.text;
+    return [newConvo, ...state];
+  }
+
+  return state.map(convo => {
+    if (convo.id === message.conversationId) {
+      const convoCopy = { ...convo };
+      convoCopy.messages = [...convoCopy.messages, message];
+      convoCopy.latestMessageText = message.text;
+      return convoCopy;
+    } else {
+      return convo;
+    }
+  });
+};
+
+/** Note new online users as they come online in store. */
 export const addOnlineUserToStore = (state, id) => {
   return state.map(convo => {
     if (convo.otherUser.id === id) {
@@ -47,18 +96,21 @@ export const removeOfflineUserFromStore = (state, id) => {
   });
 };
 
+/** When user searches for other users put a fake conversaton in store
+ * for each found user with no coversaton yet. This allows ActiveChat
+ * to mount correctly and chat to be initalized. */
 export const addSearchedUsersToStore = (state, users) => {
-  const currentUsers = {};
+  const currentUsers = new Set();
 
   // make table of current users so we can lookup faster
   state.forEach(convo => {
-    currentUsers[convo.otherUser.id] = true;
+    currentUsers.add(convo.otherUser.id);
   });
 
   const newState = [...state];
   users.forEach(user => {
     // only create a fake convo if we don't already have a convo with this user
-    if (!currentUsers[user.id]) {
+    if (!currentUsers.has(user.id)) {
       let fakeConvo = { otherUser: user, messages: [] };
       newState.push(fakeConvo);
     }
@@ -67,6 +119,7 @@ export const addSearchedUsersToStore = (state, users) => {
   return newState;
 };
 
+/** Add a new conversation to store. */
 export const addNewConvoToStore = (state, recipientId, message) => {
   return state.map(convo => {
     if (convo.otherUser.id === recipientId) {
@@ -75,6 +128,41 @@ export const addNewConvoToStore = (state, recipientId, message) => {
       newConvo.messages.push(message);
       newConvo.latestMessageText = message.text;
       return newConvo;
+    } else {
+      return convo;
+    }
+  });
+};
+
+/** Mark recieved messages of a conversaton as read. */
+export const markMessagesRead = (state, payload) => {
+  const { conversationId } = payload;
+  return state.map(convo => {
+    if (convo.id === conversationId) {
+      convo.unreadMessages = [];
+      const convoCopy = { ...convo };
+      convoCopy.messages = convo.messages.map(msg => {
+        if (msg.senderId === convo.otherUser.id) msg.messageRead = true;
+        return msg;
+      });
+      return convoCopy;
+    } else {
+      return convo;
+    }
+  });
+};
+
+/** Mark sent messages of a conversation as read. */
+export const markOwnMessagesRead = (state, payload) => {
+  const { conversationId } = payload;
+  return state.map(convo => {
+    if (convo.id === conversationId) {
+      const convoCopy = { ...convo };
+      convoCopy.messages = convo.messages.map(msg => {
+        if (msg.senderId !== convo.otherUser.id) msg.messageRead = true;
+        return msg;
+      });
+      return convoCopy;
     } else {
       return convo;
     }

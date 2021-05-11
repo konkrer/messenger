@@ -28,7 +28,7 @@ router.post('/', async (req, res, next) => {
         user1Id: senderId,
         user2Id: recipientId,
       });
-      if (onlineUsers[sender.id]) {
+      if (onlineUsers.has(sender.id)) {
         sender.online = true;
       }
     }
@@ -38,6 +38,33 @@ router.post('/', async (req, res, next) => {
       conversationId: conversation.id,
     });
     res.json({ message, sender });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Set messageRead to true for messages that have been read by user.
+// Expects an array named "readMessages" containing the message ids
+// and the conversation ID.
+router.post('/read', (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.sendStatus(401);
+    }
+    if (
+      !req.body.readMessages ||
+      !req.body.conversationId ||
+      !Array.isArray(req.body.readMessages) ||
+      !Number.isInteger(+req.body.conversationId)
+    ) {
+      return res.sendStatus(400);
+    }
+    const { readMessages, conversationId } = req.body;
+    const user = req.user;
+
+    Message.markRead(readMessages, conversationId, user);
+
+    res.json({ status: 'marked read' });
   } catch (error) {
     next(error);
   }

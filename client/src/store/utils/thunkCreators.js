@@ -7,6 +7,7 @@ import {
   addConversation,
   setNewMessage,
   setSearchedUsers,
+  setMessagesRead,
 } from '../conversations';
 import { gotUser, setFetchingStatus } from '../user';
 
@@ -21,7 +22,7 @@ export const fetchUser = () => async dispatch => {
     const { data } = await axios.get('/auth/user');
     dispatch(gotUser(data));
     if (data.id && socket.id) {
-      socket.emit('add-online-user', data.id, socket.id);
+      socket.emit('add-online-user', data.id);
     }
   } catch (error) {
     console.error(error);
@@ -35,7 +36,7 @@ export const register = credentials => async dispatch => {
     const { data } = await axios.post('/auth/register', credentials);
     await localStorage.setItem('messenger-token', data.token);
     dispatch(gotUser(data));
-    socket.emit('add-online-user', data.id, socket.id);
+    socket.emit('add-online-user', data.id);
   } catch (error) {
     console.error(error);
     dispatch(gotUser({ error: error.response.data.error || 'Server Error' }));
@@ -47,7 +48,7 @@ export const login = credentials => async dispatch => {
     const { data } = await axios.post('/auth/login', credentials);
     await localStorage.setItem('messenger-token', data.token);
     dispatch(gotUser(data));
-    socket.emit('add-online-user', data.id, socket.id);
+    socket.emit('add-online-user', data.id);
   } catch (error) {
     console.error(error);
     dispatch(gotUser({ error: error.response.data.error || 'Server Error' }));
@@ -56,11 +57,10 @@ export const login = credentials => async dispatch => {
 
 export const logout = id => async dispatch => {
   try {
-    // calling this doesn't do anything in the back-end currently
-    await axios.delete('/auth/logout');
     await localStorage.removeItem('messenger-token');
     dispatch(gotUser({}));
     socket.emit('remove-offline-user', id);
+    await axios.delete('/auth/logout');
   } catch (error) {
     console.error(error);
   }
@@ -87,6 +87,7 @@ const sendMessage = (data, body) => {
     message: data.message,
     recipientId: body.recipientId,
     sender: data.sender,
+    senderId: body.senderId,
   });
 };
 
@@ -103,6 +104,34 @@ export const postMessage = body => async dispatch => {
     }
 
     sendMessage(data, body);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const saveMessagesRead = async body => {
+  await axios.post('/api/messages/read', body);
+};
+
+const sendMessagesRead = (conversation, userId) => {
+  socket.emit('messages-read', {
+    conversationId: conversation.id,
+    senderId: conversation.otherUser.id,
+    recipientId: userId,
+  });
+};
+
+// mark messages read in DB, Redux store, and emit "messages-read" socket event.
+export const messagesRead = (conversation, userId) => async dispatch => {
+  try {
+    await saveMessagesRead({
+      readMessages: conversation.unreadMessages,
+      conversationId: conversation.id,
+    });
+
+    dispatch(setMessagesRead(conversation.id));
+
+    sendMessagesRead(conversation, userId);
   } catch (error) {
     console.error(error);
   }

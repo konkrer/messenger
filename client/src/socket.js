@@ -4,6 +4,10 @@ import io from 'socket.io-client';
 import store from './store';
 import {
   setNewMessage,
+  setNewUnreadMessage,
+  setNewOwnMessage,
+  setOwnMessagesRead,
+  setMessagesRead,
   removeOfflineUser,
   addOnlineUser,
 } from './store/conversations';
@@ -11,26 +15,39 @@ import {
 const socket = io(window.location.origin);
 
 socket.on('connect', async () => {
-  console.log('connected to server', socket.id);
-  console.log('connected to server', store.getState());
-
+  // new user comes online
   socket.on('add-online-user', id => {
     store.dispatch(addOnlineUser(id));
   });
-
+  // user goes offline
   socket.on('remove-offline-user', id => {
     store.dispatch(removeOfflineUser(id));
   });
-  socket.on('new-message', data => {
-    store.dispatch(setNewMessage(data.message, data.sender));
+  // new message received
+  socket.on('new-message', ({ message, sender }) => {
+    store.dispatch(setNewMessage(message, sender));
+    store.dispatch(setNewUnreadMessage(message));
+  });
+  // new message frow this user from another user-agent connection
+  socket.on('new-own-message', ({ message, sender }) => {
+    store.dispatch(setNewOwnMessage(message, sender, store.getState().user));
+  });
+  // messages this user wrote were read
+  socket.on('sender-messages-read', ({ conversationId }) => {
+    store.dispatch(setOwnMessagesRead(conversationId));
+  });
+  // this user read messages from another user-agent connection.
+  // Removes unread messages notifications badge.
+  socket.on('recipient-messages-read', ({ conversationId }) => {
+    store.dispatch(setMessagesRead(conversationId));
   });
 
   // if user is signed in but this socket has just connected (i.e. page refresh)
-  // emit "add-online-user" event with the userId and socketId.
+  // emit "add-online-user" event with the userId.
   try {
     const userId = store.getState().user.id;
     if (userId) {
-      socket.emit('add-online-user', userId, socket.id);
+      socket.emit('add-online-user', userId);
     }
   } catch (error) {
     console.error(error);

@@ -4,8 +4,7 @@ import { connect } from 'react-redux';
 
 // local
 import { register } from './store/utils/thunkCreators';
-import SignupForm from './components/SignupForm';
-import SignupLoginGrid from './components/SignupLoginGrid';
+import { SignupLoginGrid, SignupForm } from './components/SignupLogin';
 
 /** Signup View Component */
 

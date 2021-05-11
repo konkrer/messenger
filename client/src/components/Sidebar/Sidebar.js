@@ -9,6 +9,8 @@ const useStyles = makeStyles(() => ({
     paddingLeft: 21,
     paddingRight: 21,
     flexGrow: 1,
+    maxHeight: '100vh',
+    overflowY: 'auto',
   },
   title: {
     fontSize: 20,
