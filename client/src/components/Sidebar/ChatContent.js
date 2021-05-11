@@ -37,6 +37,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const messageSummary = message => {
+  return message?.length > 60 ? `${message.slice(0, 60)}...` : message;
+};
+
 const ChatContent = ({ conversation }) => {
   const classes = useStyles();
 
@@ -49,7 +53,7 @@ const ChatContent = ({ conversation }) => {
           {otherUser.username}
         </Typography>
         <Typography className={classes.previewText}>
-          {latestMessageText}
+          {messageSummary(latestMessageText)}
         </Typography>
       </Box>
       {conversation.unreadMessages?.length > 0 && (

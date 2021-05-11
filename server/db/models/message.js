@@ -6,7 +6,7 @@ const { Op } = Sequelize;
 
 const Message = db.define('message', {
   text: {
-    type: Sequelize.STRING,
+    type: Sequelize.STRING(8000),
     allowNull: false,
   },
   senderId: {

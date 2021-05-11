@@ -4,11 +4,14 @@ import { SenderBubble, OtherUserBubble } from '../ActiveChat';
 import moment from 'moment';
 
 const useStyles = makeStyles(() => ({
-  confimationBox: {
+  confirmationBox: {
+    position: 'absolute',
+    width: '100%',
+    bottom: -35,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-end',
-    margin: '10px 0px',
+    margin: '0px 0px 10px 0px',
   },
   avatar: {
     height: 20,
@@ -16,19 +19,28 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+const indexOfLastOwnMessage = (messages, userId) => {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (messages[i].senderId === userId) return i;
+  }
+  return -1;
+};
+
 const Messages = ({ messages, otherUser, userId }) => {
   const classes = useStyles();
+  const idxLastOwnMessage = indexOfLastOwnMessage(messages, userId);
 
   return (
     <Box>
-      {messages.map(message => {
+      {messages.map((message, idx) => {
         const time = moment(message.createdAt).format('h:mm');
+        const latestOwnMessage = idx === idxLastOwnMessage;
 
         return message.senderId === userId ? (
-          <div key={message.id}>
+          <div key={message.id} style={{ position: 'relative' }}>
             <SenderBubble text={message.text} time={time} />
-            {message.messageRead && (
-              <Box className={classes.confimationBox}>
+            {latestOwnMessage && message.messageRead && (
+              <Box className={classes.confirmationBox}>
                 <Avatar
                   alt="message read"
                   className={classes.avatar}

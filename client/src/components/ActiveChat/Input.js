@@ -7,7 +7,7 @@ import { postMessage } from '../../store/utils/thunkCreators';
 const styles = {
   root: {
     justifySelf: 'flex-end',
-    marginTop: 15,
+    marginTop: 20,
   },
   input: {
     height: 70,

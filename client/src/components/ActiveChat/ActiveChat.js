@@ -7,13 +7,15 @@ import { Box } from '@material-ui/core';
 import { messagesRead } from '../../store/utils/thunkCreators';
 import { Input, Header, Messages } from './index';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
-    flexGrow: 8,
     flexDirection: 'column',
-    height: '100vh',
+    maxHeight: '100vh',
     overflow: 'auto',
+    [theme.breakpoints.up('md')]: {
+      minHeight: '100vh',
+    },
   },
   chatContainer: {
     marginLeft: 41,

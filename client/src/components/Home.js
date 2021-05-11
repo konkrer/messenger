@@ -24,8 +24,12 @@ const Home = ({ fetchConversations, classes, user }) => {
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
-      <SidebarContainer />
-      <ActiveChat />
+      <Grid item xs={12} md={4}>
+        <SidebarContainer />
+      </Grid>
+      <Grid item xs={12} md={8}>
+        <ActiveChat />
+      </Grid>
     </Grid>
   );
 };
