@@ -38,15 +38,15 @@ export const useStyles = makeStyles(theme => ({
   },
   imgHeader: {
     width: '15ch',
-    paddingBottom: '30px',
-    marginTop: '50px',
+    paddingBottom: '4vh',
+    marginTop: '4vh',
     textAlign: 'center',
     lineHeight: 1.6,
     color: 'white',
     [theme.breakpoints.up('sm')]: {
       width: '20ch',
-      paddingBottom: '10px',
-      marginTop: '10px',
+      paddingBottom: '3vh',
+      marginTop: '3vh',
     },
     [theme.breakpoints.up('md')]: {
       paddingBottom: '150px',

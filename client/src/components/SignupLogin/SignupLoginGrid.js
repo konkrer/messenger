@@ -92,7 +92,7 @@ const SignupLoginGrid = ({
         item
         className={classes.formPanel}
         id="formPanel"
-        justify="flex-start"
+        justify="center"
         alignItems="center"
         direction="column"
         xs={12}

@@ -34,7 +34,7 @@ const reducer = (state = { isFetching: true }, action) => {
         isFetching: action.isFetching,
       };
     case SET_USER_ERROR_NULL:
-      return { ...state, error: false };
+      return { ...state, error: null };
     default:
       return state;
   }
